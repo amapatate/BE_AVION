@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
 Dynamic model for a 3 Degrees Of Freedom longitudinal aircraft  
@@ -9,8 +9,16 @@ import matplotlib.pyplot as plt
 import utils as ut
 
 ''' naming of state and input components '''
-s_y, s_h, s_va, s_a, s_th, s_q, s_size = range(0, 7)
-i_dm, i_dth, i_wy, i_wz, i_size = range(0, 5)
+# s_xxx indice des paramètres d'état =state dans le vecteur d'état X
+# s_y, s_h, s_va, s_a, s_th, s_q, s_size = list(range(0, 7)) # ajout list() pour compatibilité avec python3
+s_y, s_h, s_va, s_a, s_th, s_q = list(range(0, 6))
+# en python 2 range est une liste et renvoie une liste, en python3 range est une class
+# i_dm, i_dth, i_wy, i_wz, i_size = list(range(0, 5))
+
+# indices des commandes du vecteur U  i_wy et i_wz ???? i_dth indice de l'input = commande thrutle
+i_wy, i_wz = list(range(0, 2))
+i_dm, i_dth = list(range(0, 2))
+i_dphr = i_dm  # dm = delta m : commande en tangage ici via le Plan Horizontal Réglable
 
 
 def get_mach(va, T, k=1.4, Rs=287.05): return va / math.sqrt(k * Rs * T)
@@ -25,6 +33,20 @@ def propulsion_model(X, U, P):
     p, rho, T = ut.isa(X[s_h])
     rho0 = 1.225
     mach = get_mach(X[s_va], T)
+    return P.F0 * math.pow(rho / rho0, 0.6) * (0.568 + 0.25 * math.pow(1.2 - mach, 3)) * U[i_dth]
+
+
+def propulsion_model_mach(X, U, P, mach):
+    '''
+    même fonction propulsion_model mais avec mach connu qui n'a donc pas à être calculé
+    :param X: vecteur d'état
+    :param U: vecteur de commande
+    :param P: instance de la classe paramètre de l'avion considéré
+    :param mach: nombre de mach
+    :return:
+    '''
+    p, rho, T = ut.isa(X[s_h])
+    rho0 = 1.225
     return P.F0 * math.pow(rho / rho0, 0.6) * (0.568 + 0.25 * math.pow(1.2 - mach, 3)) * U[i_dth]
 
 
@@ -47,9 +69,19 @@ def get_aero_ceofs(va, alpha, q, dphr, P):
     CLdphr = St_over_S * P.CLat
     CL = CL0 + CLa * alpha + CLq * q / va + CLdphr * dphr
     CD = P.CD0 + P.ki * CL ** 2
-    Cm = P.Cm0 - (P.ms * P.CLa)(alpha - P.a0) + P.Cmq * P.lt / va * q + P.Cmd * dphr
+    Cm = P.Cm0 - P.ms * P.CLa * (alpha - P.a0) + P.Cmq * P.lt / va * q + P.Cmd * dphr
     return CL, CD, Cm
 
+def get_aero_ceofs_ms(va, alpha, q, dphr, P, mms):
+    St_over_S = P.St / P.S
+    CL0 = (St_over_S * 0.25 * P.CLat - P.CLa) * P.a0
+    CLa = P.CLa + St_over_S * P.CLat * (1 - 0.25)
+    CLq = P.lt * St_over_S * P.CLat * P.CLq
+    CLdphr = St_over_S * P.CLat
+    CL = CL0 + CLa * alpha + CLq * q / va + CLdphr * dphr
+    CD = P.CD0 + P.ki * CL ** 2
+    Cm = P.Cm0 - mms * P.CLa * (alpha - P.a0) + P.Cmq * P.lt / va * q + P.Cmd * dphr
+    return CL, CD, Cm
 
 def get_aero_forces_and_moments(X, U, P):
     p, rho, T = ut.isa(X[s_h])
@@ -61,6 +93,7 @@ def get_aero_forces_and_moments(X, U, P):
 
 def dyn(X, t, U, P):
     '''  Dynamic model '''
+    s_size = len(X)
     Xdot = np.zeros(s_size)
     gamma_a = X[s_th] - X[s_a]  # air path angle
     cg, sg = math.cos(gamma_a), math.sin(gamma_a)
@@ -73,7 +106,7 @@ def dyn(X, t, U, P):
     Xdot[s_a] = X[s_q] - (L + F * sa) / P.m / X[s_va] + P.g / X[s_va] * cg
     Xdot[s_th] = X[s_q]
     Xdot[s_q] = M / P.Iyy
-    return Xdot
+    return Xdot  # Xdot représente "X point" la dérivée temporelle de X
 
 
 def trim(P, args=None):

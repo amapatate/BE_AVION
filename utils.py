@@ -1,4 +1,4 @@
-#! /usr/bin/env python2
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
 
@@ -14,10 +14,10 @@ Unit convertions
 """
 
 
-def rad_of_deg(d): return d / 180. * math.pi
+def rad_of_deg(d): return d / 180. * np.pi
 
 
-def deg_of_rad(r): return r * 180. / math.pi
+def deg_of_rad(r): return r * 180. / np.pi
 
 
 # http://en.wikipedia.org/wiki/Nautical_mile
