@@ -4,7 +4,7 @@
 import numpy as np, matplotlib.pyplot as plt
 import utils, dynamic
 
-markeur = ('o', 'v', '^', '<', '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd')
+markeur = ('o', 'v', '^', '<', '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd', ' ')
 plt.grid(True)
 P = dynamic.Param_737_300()
 
@@ -207,20 +207,25 @@ def portance_equilibre():
 # Tracer la polaire équilibrée pour les deux valeurs précédentes de la marge statique. La
 # polaire équilibrée dépend-elle de la marge statique ? Quelle est la valeur de la finesse
 # maximale ? Retrouver par le calcul ce résultat.
+# CD = CD0 + k*CL**2
+# f = cl/cd   df/dcl=0 => cl(fmax)=(cl0/k)**0.5 cdmax=2*CD0 f = 1/2(k*CD0)**0.5
+
+def fmax(P):
+    return np.power(4 * P.ki *P.CD0, -0.5)
 
 def polaire_equilibre():
     ms_list = [0.2, 1]
     a_deg = [-80, 80]
     a_rad = np.array(a_deg) * np.pi / 180.
 
-    abs_alpha = np.linspace(a_rad[0], a_rad[1], 20)
+    abs_alpha = np.linspace(a_rad[0], a_rad[1], 40)
     plt.title("Polaire équilibré CLe : " + P.name)
     # plt.axis([-20, 30, -2, 3])
     #####################################################################################
     # FONCTIONS ANNEXES : MATHPLOTLIB
-    # plt.text(-19.5, 2.6, r"Plus la marge statique est grande, moins CLe augmente avec $\alpha$e")
-    # plt.text(-19.5, 2.4, "La Portance croît avec le phr.")
-    # plt.annotate("Modèle linéaire : Pas de chute de portance : $\delta$phr = " + str(int(dphr_deg[1]))+"°",
+    plt.text(0.1, 9, "La polaire équilibrée ne dépend pas de la marge statique")
+    plt.text(0.1, 8, "Les deux polaires sont confondues.")
+    # plt.annotate("pente = fmax = "+str(pente),
     # xy=(20, 2.8), xytext=(-19.5, 2.8),arrowprops={'facecolor':'red', 'shrink':0.05} )
     ####################################################################################
     for idx, ms in enumerate(ms_list):
@@ -228,8 +233,13 @@ def polaire_equilibre():
             [dynamic.get_aero_ceofs(100., alpha, 0., dphre_ms(alpha, P, ms), P)[1] for alpha in abs_alpha])
         ord_CLe = np.array(
             [dynamic.get_aero_ceofs(100., alpha, 0., dphre_ms(alpha, P, ms), P)[0] for alpha in abs_alpha])
-        plt.plot(ord_CDe, ord_CLe, marker=markeur[idx], label="ms = " + str(ms_list[idx]))
-
+        plt.plot(ord_CDe, ord_CLe, marker=markeur[19], label="ms = " + str(ms_list[idx]))
+    pente = 17
+    plt.annotate("pente = fmax = " + str(pente),
+                 xy=(0.37, 6), xytext=(1, 2.8), arrowprops={'facecolor': 'red', 'shrink': 0.05})
+    plt.text(1, 2.0, "fmax calculé vaut {:.2f}".format(fmax(P)))
+    x = np.linspace(0, 0.5, 10)
+    plt.plot(x, pente * x)
     plt.legend(loc=3)
     plt.axhline()
     plt.axvline()
