@@ -37,7 +37,7 @@ def poussee():
     plt.legend()
     plt.xlabel('mach')
     plt.ylabel('Poussee max en kN')
-    plt.savefig('images/poussee_of_mach.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('sceance1/poussee_of_mach.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
@@ -75,7 +75,7 @@ def portance():
     plt.axvline()
     plt.xlabel(r'Incidence $\alpha$')
     plt.ylabel('Coef. portance CL')
-    plt.savefig('images/CL_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('sceance1/CL_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
@@ -114,7 +114,7 @@ def tangage():
     plt.axvline()
     plt.xlabel(r'Incidence $\alpha$')
     plt.ylabel('Coef. tangage Cm')
-    plt.savefig('images/Cm_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('sceance1/Cm_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
@@ -160,7 +160,7 @@ def dphre_of_alpha():
     plt.axvline()
     plt.xlabel(r'Incidence $\alpha$')
     plt.ylabel('$\delta$PHRe ')
-    plt.savefig('images/dphre_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('sceance1/dphre_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
@@ -197,7 +197,7 @@ def portance_equilibre():
     plt.axvline()
     plt.xlabel(r'Incidence $\alpha$e')
     plt.ylabel('Coef. portance équilibré CLe')
-    plt.savefig('images/CL_equilibre.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('sceance1/CL_equilibre.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
@@ -245,7 +245,7 @@ def polaire_equilibre():
     plt.axvline()
     plt.xlabel('Coefficient de Trainée CDe')
     plt.ylabel('Coefficient de Portance CLe')
-    plt.savefig('images/CL_equilibre.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('sceance1/CL_equilibre.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
