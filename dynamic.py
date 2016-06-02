@@ -86,7 +86,7 @@ def get_aero_ceofs_ms(va, alpha, q, dphr, P, mms):
 def get_aero_forces_and_moments(X, U, P):
     p, rho, T = ut.isa(X[s_h])
     pdyn = 0.5 * rho * X[s_va] ** 2
-    CL, CD, Cm = get_aero_ceofs(X[s_h], X[s_va], X[s_a], X[s_q], U[i_dm], P)
+    CL, CD, Cm = get_aero_ceofs(X[s_va], X[s_a], X[s_q], U[i_dm], P)
     L, D, M = pdyn * P.S * np.array([CL, CD, P.cbar * Cm])
     return L, D, M
 
