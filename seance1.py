@@ -201,7 +201,7 @@ def portance_equilibre():
     plt.show()
 
 
-# portance_equilibre()
+portance_equilibre()
 
 # 3.2.6
 # Tracer la polaire équilibrée pour les deux valeurs précédentes de la marge statique. La

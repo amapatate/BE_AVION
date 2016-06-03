@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #  -*- coding: utf-8 -*-
 
+import math
 import numpy as np, matplotlib.pyplot as plt
 import utils as ut
 import dynamic as dy
@@ -39,12 +40,10 @@ P = dy.Param_737_300()
 
 
 h_tuple = (3000., 11000.)
-h_kilometre = np.array(h_tuple)/1000
+h_kilometre = np.array(h_tuple) / 1000
 mac_tuple = (0.5, 0.8)
 km_tuple = (0.1, 0.9)
 ms_tuple = (0.2, 1.)
-
-
 
 ord_max = 1.
 abs_min = 3
@@ -52,84 +51,122 @@ abs_max = 11
 nb_ligne = len(km_tuple) * len(ms_tuple)
 
 
+def trace(km, ms):
+    P.set_mass_and_static_margin(km, ms)  # km masse avion, ms : marge statique
+    for idx, mac in enumerate(mac_tuple):
+        dico = {}  # dico = args dans la fonction trim
+        alphas = []  # liste avec alpha1 obtenu avec h1=3000m et alpha2 associé à h2
+        dphrs = []
+        dths = []
 
-def trace(km,ms):
-        P.set_mass_and_static_margin(km, ms)# km masse avion, ms : marge statique
-        for idx, mac in enumerate(mac_tuple):
-            dico = {}  # dico = args dans la fonction trim
-            alphas = []  # liste avec alpha1 obtenu avec h1=3000m et alpha2 associé à h2
-            dphrs = []
-            dths = []
+        for h in h_tuple:
+            dico['h'] = h
+            dico['va'] = dy.va_of_mach(mac, h)  # conv mach en m/s
+            X, U = dy.trim(P, dico)
+            # alphas += [ut.deg_of_rad(X[3])]  # alpha en degrés
+            # dphrs += [ut.deg_of_rad(U[0])] # delta PHR en degrés
+            alphas += [X[3]]  # alpha en radians
+            dphrs += [U[0]]  # delta PHR en radians
+            dths += [U[1]]  # thrust de 0 à 1
+        plt.title("ms = " + str(ms_tuple[0]) + "  km = " + str(km_tuple[0]) + " - " + P.name)
+        # plt.title(r"$\alpha$")
 
-            for h in h_tuple:
-                dico['h'] = h
-                dico['va'] = dy.va_of_mach(mac, h)  # conv mach en m/s
-                X, U = dy.trim(P, dico)
-                alphas += [ut.deg_of_rad(X[3])]  # alpha en degrés
-                # alphas += [X[3]]  # alpha en radians
-                # dphrs += [U[0]]  # delta PHR en radians
-                dphrs += [ut.deg_of_rad(U[0])] # delta PHR en degrés
-                dths += [U[1]] # thrust de 0 à 1
-            plt.title("ms = " + str(ms_tuple[0]) + "  km = " + str(km_tuple[0]) +" - "+ P.name)
-            # plt.title(r"$\alpha$")
+        # grille 1x3 1 ligne 3 colonnes figure 1 : numérotation par ligne de gauche à droite
+        plt.subplot(1, 3, 1)
+        plt.plot(h_kilometre, alphas, marker=markeur[idx], label="Mac = " + str(mac))
+        plt.plot(h_kilometre, alphas, marker=markeur[idx], label="Mac = " + str(mac))
+        # plt.axis([abs_min, abs_max, 0., 20])
+        plt.title(r"$\alpha$")
 
-# grille 1x3 1 ligne 3 colonnes figure 1 : numérotation par ligne de gauche à droite
-            plt.subplot(1,3,1)
-            plt.plot(h_kilometre, alphas,marker=markeur[idx], label="Mac = " + str(mac))
-            plt.plot(h_kilometre, alphas,marker=markeur[idx], label="Mac = " + str(mac))
-            # plt.axis([abs_min, abs_max, 0., 20])
-            plt.title(r"$\alpha$")
+        # grille 1x3  figure 2
+        plt.subplot(1, 3, 2)
+        plt.subplots_adjust(wspace=0.4)
+        plt.title(r"$\delta$phr")
+        plt.plot(h_kilometre, dphrs, marker=markeur[idx], label="Mac = " + str(mac))
+        # plt.axis([abs_min, abs_max, 0., 10])
+        # plt.legend(loc=3,prop={'size':7})
+        # plt.yticks(color='red')
+        plt.xlabel('Altitude en km - ms = ' + str(ms) + " - coef. de masse km = " + str(km))  # , color='red')
 
-# grille 1x3  figure 2
-            plt.subplot(1,3,2)
-            plt.subplots_adjust(wspace = 0.4)
-            plt.title(r"$\delta$phr")
-            plt.plot(h_kilometre, dphrs, marker=markeur[idx], label="Mac = " + str(mac))
-            # plt.axis([abs_min, abs_max, 0., 10])
-            # plt.legend(loc=3,prop={'size':7})
-            # plt.yticks(color='red')
-            plt.xlabel('Altitude en km - ms = '+str(ms) +" - coef. de masse km = "+str(km)) #, color='red')
-
-# grille 1x3  figure 3
-            plt.subplot(1,3,3)
-            plt.title(r"$\delta$th")
-            plt.plot(h_kilometre, dths, marker=markeur[idx], label="Mac = " + str(mac))
-            plt.legend(loc=1,prop={'size':7})
-            plt.axis([abs_min, abs_max, 0., ord_max])
-            # plt.text(0.01 * abs_max, 0.8 * ord_max, "ms = " + str(ms_tuple[0]) + "  km = " + str(km_tuple[0]))
-            # plt.legend(loc=2)
-            # plt.xlabel('Altitude')
-            # plt.ylabel(r'Incidence $\alpha$')
-
+        # grille 1x3  figure 3
+        plt.subplot(1, 3, 3)
+        plt.title(r"$\delta$th")
+        plt.plot(h_kilometre, dths, marker=markeur[idx], label="Mac = " + str(mac))
+        plt.legend(loc=1, prop={'size': 7})
+        plt.axis([abs_min, abs_max, 0., ord_max])
+        # plt.text(0.01 * abs_max, 0.8 * ord_max, "ms = " + str(ms_tuple[0]) + "  km = " + str(km_tuple[0]))
+        # plt.legend(loc=2)
+        # plt.xlabel('Altitude')
+        # plt.ylabel(r'Incidence $\alpha$')
 
 
-for i, km in enumerate(km_tuple):
-    for j, ms in enumerate(ms_tuple):
-        trace(km,ms)
-        plt.show()
-        plt.close()
-
-
+# for i, km in enumerate(km_tuple):
+#     for j, ms in enumerate(ms_tuple):
+#         trace(km, ms)
+#         plt.show()
+#         plt.close()
 
 # 4.2.2 :
 #
-# Choisir arbitrairement un point de trim parmi dans l’ensemble des points de trim proposés.
-# Identifier l’équation de sustentation dans l’équation d’état. En faisant l’hypothèse que
-# l’incidence α est petite utiliser cette équation pour calculer la valeur du coefficient de
-# portance C L en fonction de la vitesse et de la masse. Conclure quant à la technique de
-# réglage de la vitesse de l’avion. Utiliser la valeur de C L obtenue ainsi que les graphiques
-# tracés lors de la première séance pour déterminer (approximativement) les valeurs de trim
-# α e et δ P HRe . Comment obtenir la valeur de trim de la manette des gaz δ th à partir de la
-# polaire équilibrée ?
-#
-# on choisit le point de trim suivant :
+# 4.2.2.1 - Choisir arbitrairement un point de trim dans l’ensemble des points de trim proposés.
+
+# 4.2.2.2 - Identifier l’équation de sustentation dans l’équation d’état.
+# >>>>> c'est l'équation en "alpha point" on prend alpha point = q = 0 et alpha petit. on en déduit CL via la portance L
+
+
+
+# 4.2.2.3 - En faisant l’hypothèse que l’incidence α est petite utiliser cette équation
+# pour calculer la valeur du coefficient de la portance CL en fonction de la vitesse et de la masse.
+
+# En tangage : Le compensateur le plus courant (quasiment indispensable) est le compensateur
+# de profondeur, qui sert à équilibrer l'appareil sur l'axe de tangage (tendance à piquer ou à cabrer).
+# Pour une masse donnée, à chaque vitesse de vol correspond une incidence de vol et donc une position
+#  de la gouverne de profondeur. À chaque changement de vitesse, l'incidence change,
+# ainsi il faut compenser à nouveau (ou trimer) pour garder cette nouvelle incidence.
+# Le trim correspond à une incidence et donc une vitesse, pour une masse donnée de l'avion.
+
+
+
+
+# on choisit le point de trim numéro 16 pour lequel on a :
 h = 11000.
 mac = 0.8
-km=0.9
-ms=1.
+km = 0.9
+ms = 1.
 
 # intialisation de l'avion
-P.set_mass_and_static_margin(km, ms)# km masse avion, ms : marge statique
+P.set_mass_and_static_margin(km, ms)  # km masse avion, ms : marge statique
+
+# calcul de va en m/s
+va = dy.va_of_mach(mac, h)
+
+# calcul de rho
+rho = ut.isa(h)[1]
+
+args = {}
+args['h'] = h
+args['va'] = dy.va_of_mach(mac, h)  # conv mach en m/s
+X, U = dy.trim(P, args)
+alpha16 = X[3]  # alpha en radians
+dphr16 = U[0]  # delta PHR en radians
+dth16 = U[1]  # thrust de 0 à 1
+
+# calcul de la poussée pour le point de trim 16
+F16 = dy.propulsion_model(X, U, P)
+
+# calcul de CL16, la val du CL au point de trim16
+CL16 = 2 * (P.m * P.g - math.sin(alpha16)) / ((rho * np.power(va, 2) * P.S))
+
+print("valeurs obtenues via la fonction trim.")
+print("alpha16 = ", alpha16, " rad")
+print("angle réglage PHR dphr16 = ", dphr16, " rad" )
+print("Gaz ou thrust dth16 = ", dth16)
+print("CL16 = ", CL16)
 
 
 
+# 4.2.2.4 Conclure quant à la technique de réglage de la vitesse de l’avion.
+# 4.2.2.5 - Utiliser la valeur de CL obtenue ainsi que les graphiques tracés lors de la première séance
+# pour déterminer (approximativement) les valeurs de trim αe et δPHRe .
+# 4.2.2.6 - Comment obtenir la valeur de trim de la manette des gaz δth à partir de la polaire équilibrée ?
+#
