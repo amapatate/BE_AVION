@@ -10,7 +10,7 @@ import utils as ut
 
 ''' naming of state and input components '''
 # s_xxx indice des paramètres d'état =state dans le vecteur d'état X
-s_y, s_h, s_va, s_a, s_th, s_q, s_size = list(range(0, 7)) # ajout list() pour compatibilité avec python3
+s_y, s_h, s_va, s_a, s_th, s_q, s_size = list(range(0, 7))  # ajout list() pour compatibilité avec python3
 
 # en python 2 range est une liste et renvoie une liste, en python3 range est une class
 i_dm, i_dth, i_wy, i_wz, i_size = list(range(0, 5))
@@ -34,6 +34,22 @@ def propulsion_model(X, U, P):
     return P.F0 * math.pow(rho / rho0, 0.6) * (0.568 + 0.25 * math.pow(1.2 - mach, 3)) * U[i_dth]
 
 
+def trainee(h, mac, CDe, P):
+    p, rho, T = ut.isa(h)
+    va = va_of_mach(mac, h)
+    return 0.5 * rho * math.pow(va, 2) * P.S * CDe
+
+
+def coef_pousseel(X, U, P):
+    '''
+    :return: retourne coef tel que F = coef * deltath
+    '''
+    p, rho, T = ut.isa(X[s_h])
+    rho0 = 1.225
+    mach = get_mach(X[s_va], T)
+    return P.F0 * math.pow(rho / rho0, 0.6) * (0.568 + 0.25 * math.pow(1.2 - mach, 3))
+
+
 def propulsion_model_mach(X, U, P, mach):
     '''
     même fonction propulsion_model mais avec mach connu qui n'a donc pas à être calculé
@@ -48,6 +64,7 @@ def propulsion_model_mach(X, U, P, mach):
     return P.F0 * math.pow(rho / rho0, 0.6) * (0.568 + 0.25 * math.pow(1.2 - mach, 3)) * U[i_dth]
 
 
+# h non utilisé
 # def get_aero_ceofs(h, va, alpha, q, dphr, P):
 #     St_over_S = P.St/P.S
 #     CL0 = (St_over_S*0.25*P.CLat - P.CLa)*P.a0
@@ -70,6 +87,7 @@ def get_aero_ceofs(va, alpha, q, dphr, P):
     Cm = P.Cm0 - P.ms * P.CLa * (alpha - P.a0) + P.Cmq * P.lt / va * q + P.Cmd * dphr
     return CL, CD, Cm
 
+
 def get_aero_ceofs_ms(va, alpha, q, dphr, P, mms):
     St_over_S = P.St / P.S
     CL0 = (St_over_S * 0.25 * P.CLat - P.CLa) * P.a0
@@ -80,6 +98,7 @@ def get_aero_ceofs_ms(va, alpha, q, dphr, P, mms):
     CD = P.CD0 + P.ki * CL ** 2
     Cm = P.Cm0 - mms * P.CLa * (alpha - P.a0) + P.Cmq * P.lt / va * q + P.Cmd * dphr
     return CL, CD, Cm
+
 
 def get_aero_forces_and_moments(X, U, P):
     p, rho, T = ut.isa(X[s_h])

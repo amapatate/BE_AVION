@@ -20,7 +20,7 @@ P = dynamic.Param_737_300()
 def poussee():
     abs_mach = np.linspace(0.5, 0.8, 20)  # mach en abscissse : vecteur avec 20 points
     U = [0., 1.]  # [ delta_phr delta_thrust ]  poussé max donc thrust=1
-    h_list = [3000., 10000.]
+    h_list = [3000., 11000.]
     plt.title("Poussée max en fonction du mach et de l'altitude : " + P.name)
     plt.axis([0.5, 0.8, 50, 100])
     #####################################################################################
@@ -158,8 +158,8 @@ def dphre_of_alpha():
     plt.legend(loc=3)
     plt.axhline()
     plt.axvline()
-    plt.xlabel(r'Incidence $\alpha$')
-    plt.ylabel('$\delta$PHRe ')
+    plt.xlabel(r'Incidence $\alpha$(°)')
+    plt.ylabel('$\delta$ PHRe (rad) ')
     plt.savefig('sceance1/dphre_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
@@ -171,7 +171,7 @@ def dphre_of_alpha():
 # CL lorsque δPHR = δPHRe . Tracer CLe pour deux valeurs de la marge statique : ms = 0.2
 # et ms = 1. Conclusions ?
 
-def portance_equilibre():
+def portance_equilibre_of_alphae():
     ms_list = [0.2, 1]
     a_deg = [-10, 20]
     a_rad = np.array(a_deg) * np.pi / 180.
@@ -201,7 +201,7 @@ def portance_equilibre():
     plt.show()
 
 
-portance_equilibre()
+# portance_equilibre_of_alphae()
 
 # 3.2.6
 # Tracer la polaire équilibrée pour les deux valeurs précédentes de la marge statique. La
@@ -212,6 +212,8 @@ portance_equilibre()
 
 def fmax(P):
     return np.power(4 * P.ki *P.CD0, -0.5)
+
+print("fmax = ",fmax(P))
 
 def polaire_equilibre():
     ms_list = [0.2, 1]
@@ -249,4 +251,4 @@ def polaire_equilibre():
     plt.show()
 
 
-#polaire_equilibre()
+# polaire_equilibre()

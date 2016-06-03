@@ -166,7 +166,27 @@ print("CL16 = ", CL16)
 
 
 # 4.2.2.4 Conclure quant à la technique de réglage de la vitesse de l’avion.
+
+# >>>> pour augmenter la vitesse, il faut diminuer CL donc alphae donc augmenter algébriquement
+# l'angle du PHR pour augmenter la portance ou diminuer la déportance.
+
 # 4.2.2.5 - Utiliser la valeur de CL obtenue ainsi que les graphiques tracés lors de la première séance
 # pour déterminer (approximativement) les valeurs de trim αe et δPHRe .
+
+print("La valeur de alphae obtenue via le graphique de la séance 1 CLe=f(alphae) est ", ut.rad_of_deg(6.7))
+print("La valeur de dphre obtenue via le graphique dphre = f(alphae) de la séance 1 en utilisant la valeur de alphae précédente est -0.21rad")
+
 # 4.2.2.6 - Comment obtenir la valeur de trim de la manette des gaz δth à partir de la polaire équilibrée ?
-#
+# connaissant CLe = 0.57 la polaire équilibrée donne CDe = 0.04  ; on utilise F = D poussee = trainee pour calculé deltath
+
+# calcul du coef de poussée tel que F = coef * deltath
+coef = dy.coef_pousseel(X,U,P)
+
+#calcul de la trainée
+CDe = 0.04
+D = dy.trainee(h,mac, CDe,P)
+
+# deltath
+deltath_polaire = D/coef
+
+print("deltath obtenu via la polaire équilibrée = ", deltath_polaire )
