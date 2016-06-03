@@ -10,14 +10,12 @@ import utils as ut
 
 ''' naming of state and input components '''
 # s_xxx indice des paramètres d'état =state dans le vecteur d'état X
-# s_y, s_h, s_va, s_a, s_th, s_q, s_size = list(range(0, 7)) # ajout list() pour compatibilité avec python3
-s_y, s_h, s_va, s_a, s_th, s_q = list(range(0, 6))
-# en python 2 range est une liste et renvoie une liste, en python3 range est une class
-# i_dm, i_dth, i_wy, i_wz, i_size = list(range(0, 5))
+s_y, s_h, s_va, s_a, s_th, s_q, s_size = list(range(0, 7)) # ajout list() pour compatibilité avec python3
 
-# indices des commandes du vecteur U  i_wy et i_wz ???? i_dth indice de l'input = commande thrutle
-i_wy, i_wz = list(range(0, 2))
-i_dm, i_dth = list(range(0, 2))
+# en python 2 range est une liste et renvoie une liste, en python3 range est une class
+i_dm, i_dth, i_wy, i_wz, i_size = list(range(0, 5))
+
+# indices des commandes du vecteur U  i_wy : vent horizontal et i_wz : vent vertical i_dth indice de l'input = commande thrutle
 i_dphr = i_dm  # dm = delta m : commande en tangage ici via le Plan Horizontal Réglable
 
 

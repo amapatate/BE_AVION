@@ -108,3 +108,28 @@ for i, km in enumerate(km_tuple):
         trace(km,ms)
         plt.show()
         plt.close()
+
+
+
+# 4.2.2 :
+#
+# Choisir arbitrairement un point de trim parmi dans l’ensemble des points de trim proposés.
+# Identifier l’équation de sustentation dans l’équation d’état. En faisant l’hypothèse que
+# l’incidence α est petite utiliser cette équation pour calculer la valeur du coefficient de
+# portance C L en fonction de la vitesse et de la masse. Conclure quant à la technique de
+# réglage de la vitesse de l’avion. Utiliser la valeur de C L obtenue ainsi que les graphiques
+# tracés lors de la première séance pour déterminer (approximativement) les valeurs de trim
+# α e et δ P HRe . Comment obtenir la valeur de trim de la manette des gaz δ th à partir de la
+# polaire équilibrée ?
+#
+# on choisit le point de trim suivant :
+h = 11000.
+mac = 0.8
+km=0.9
+ms=1.
+
+# intialisation de l'avion
+P.set_mass_and_static_margin(km, ms)# km masse avion, ms : marge statique
+
+
+
