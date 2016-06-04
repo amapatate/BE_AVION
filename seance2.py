@@ -190,3 +190,9 @@ D = dy.trainee(h,mac, CDe,P)
 deltath_polaire = D/coef
 
 print("deltath obtenu via la polaire équilibrée = ", deltath_polaire )
+
+# autre méthode de calcul de delta_th : D = mg/f  ; f = L/D=CLe/CDe
+f = 0.57/0.04 ; print("f = ",D)
+D = P.g * P.m/f
+f = 0.57/0.04 ; print("f = ",D)
+print("autre méthode f = CLe/CDe delta_th = ", D/coef)
