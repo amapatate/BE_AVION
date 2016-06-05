@@ -296,8 +296,8 @@ def etat_lin4(h_tuple, mac_tuple, km_tuple, ms_tuple):
                     # et ajout dans le tuple etat
                     etat = (X, U) = dy.trim(P, dico)
                     etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
-                    A4 = A[2:, 2:]
-                    B4 = B[2:]
+                    A4 = np.copy(A[2:, 2:])
+                    B4 = np.copy(B[2:])
                     etat_lin4 = (A4, B4)
                     # construction du tuple (h,mac,km,ms) qui jouera le role de clé du dico states
                     pt_trim = (h, mac, km, ms)
@@ -340,8 +340,8 @@ def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
                     # et ajout dans le tuple etat
                     etat = (X, U) = dy.trim(P, dico)
                     etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
-                    A4 = A[2:, 2:]
-                    B4 = B[2:]
+                    A4 = np.copy(A[2:, 2:])
+                    B4 = np.copy(B[2:])
                     etat_lin4 = (A4, B4)
                     # calcul vp val propre
                     vp = np.linalg.eig(A4)

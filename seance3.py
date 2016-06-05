@@ -39,67 +39,43 @@ ms = 1.
 
 
 
-def trajectoire(X, U, P):
-    t = np.linspace(0, 100, 101)
-    sol = odeint(dy.dyn, X, t, (U, P))
-    dy.plot(sol[:, 0], sol, U=None, figure=None, window_title="Paramètres d'état en fonction de y(mètres)")
-    plt.savefig('seance2/param_of_y.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
-    plt.show()
-    plt.close()
-
-    dy.plot(t, sol, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
-    plt.savefig('seance2/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
-    plt.show()
-    plt.close()
-
-    plt.axis([0, max(sol[:, 0]) / 1000. + 10., 0, 12])
-    plt.plot(sol[:, 0] / 1000., sol[:, 1] / 1000.)
-    plt.xlabel("Distance parcourue y (kilomètres) durant 100s")
-    plt.ylabel("Altitude h (kilomètres)")
-    plt.title("Trajectoire d'un " + P.name)
-    plt.text(1, 10, "Comme attendu le mouvenement est rectiligne uniforme")
-    plt.text(1, 9, "Point de trim : mac = {:.2f}, h = {:.0f}m, ms = {:.1f}".format(mac, h, P.ms))
-    plt.text(1, 8, "masse = {:.0f}kg".format(P.m))
-    plt.savefig('seance2/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
-    plt.show()
 
 
 
-
-def etat_lin4(h_tuple, mac_tuple, km_tuple, ms_tuple):
-    '''
-    calcule les repr d'état linéarisées A et B
-    :param h_tuple: tuple contenant le altitudes
-    :param mac_tuple:
-    :param km_tuple:
-    :param ms_tuple:
-    :return:
-    '''
-    dico_etat = {}  # dico pour stocker les 16 états associés au 16 pts de trim
-    dico_etat_lin = {}
-    dico_etat_lin4 = {}
-
-    for i, km in enumerate(km_tuple):
-        for j, ms in enumerate(ms_tuple):
-            P.set_mass_and_static_margin(km, ms)
-            for idx, mac in enumerate(mac_tuple):
-                dico = {}  # dico = args dans la fonction trim
-                for h in h_tuple:
-                    dico['h'] = h
-                    dico['va'] = dy.va_of_mach(mac, h)  # conv mach en m/s
-                    # calcul des points de trim associés aux 4 valeurs h, mac, km et ms
-                    # et ajout dans le tuple etat
-                    etat = (X, U) = dy.trim(P, dico)
-                    etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
-                    A4 = A[2:, 2:]
-                    B4 = B[2:]
-                    etat_lin4 = (A4, B4)
-                    # construction du tuple (h,mac,km,ms) qui jouera le role de clé du dico states
-                    pt_trim = (h, mac, km, ms)
-                    dico_etat[pt_trim] = etat
-                    dico_etat_lin[pt_trim] = etat_lin
-                    dico_etat_lin4[pt_trim] = etat_lin4
-    return dico_etat_lin4
+# def etat_lin4(h_tuple, mac_tuple, km_tuple, ms_tuple):
+#     '''
+#     calcule les repr d'état linéarisées A et B
+#     :param h_tuple: tuple contenant le altitudes
+#     :param mac_tuple:
+#     :param km_tuple:
+#     :param ms_tuple:
+#     :return:
+#     '''
+#     dico_etat = {}  # dico pour stocker les 16 états associés au 16 pts de trim
+#     dico_etat_lin = {}
+#     dico_etat_lin4 = {}
+#
+#     for i, km in enumerate(km_tuple):
+#         for j, ms in enumerate(ms_tuple):
+#             P.set_mass_and_static_margin(km, ms)
+#             for idx, mac in enumerate(mac_tuple):
+#                 dico = {}  # dico = args dans la fonction trim
+#                 for h in h_tuple:
+#                     dico['h'] = h
+#                     dico['va'] = dy.va_of_mach(mac, h)  # conv mach en m/s
+#                     # calcul des points de trim associés aux 4 valeurs h, mac, km et ms
+#                     # et ajout dans le tuple etat
+#                     etat = (X, U) = dy.trim(P, dico)
+#                     etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
+#                     A4 = np.copy(A[2:, 2:])
+#                     B4 = np.copy(B[2:])
+#                     etat_lin4 = (A4, B4)
+#                     # construction du tuple (h,mac,km,ms) qui jouera le role de clé du dico states
+#                     pt_trim = (h, mac, km, ms)
+#                     dico_etat[pt_trim] = etat
+#                     dico_etat_lin[pt_trim] = etat_lin
+#                     dico_etat_lin4[pt_trim] = etat_lin4
+#     return dico_etat_lin4
 
 
 
@@ -132,8 +108,8 @@ def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
                     # et ajout dans le tuple etat
                     etat = (X, U) = dy.trim(P, dico)
                     etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
-                    A4 = A[2:, 2:]
-                    B4 = B[2:]
+                    A4 = np.copy(A[2:, 2:])
+                    B4 = np.copy(B[2:])
                     etat_lin4 = (A4, B4)
                     # calcul vp val propre
                     vp = np.linalg.eig(A4)
@@ -201,7 +177,7 @@ def affiche_mat(M):
 # affiche_mat(M)
 # print(A4)
 
-affiche_mat(X)
+
 
 
 # Pour la séance 3, le point de trim
@@ -213,4 +189,47 @@ affiche_mat(X)
 # -0.00269042 - 0.05730786j
 # ]
 
+#5.2.1 - évolution sur 240s suite à une rafale de vent verticale de wh = 2 m/s induisant un nouvelle angle alpha
+# initial à partir duquel on "lache" l'avion.
+
+#calcul du nouveau vecteur d'état intial on a alpha = theta (incidence = assiette)
+#atan(wh/vae)
+dalpha =  math.atan(2./X[dy.s_va])
+Xi=np.copy(X)
+Ui=np.copy(U)
+# Ui[dy.i_wz]+=2
+Xi[dy.s_a]+=dalpha
+Xi[dy.s_th]+=dalpha
+print("*******************")
+# affiche_mat(Xi)
+# affiche_mat(X)
+# print(dalpha)
+
+
+
+def trajectoire(Xi,X, U, P):
+    tt=240 # 240s
+    t = np.linspace(0, tt, tt+1)
+    sol = odeint(dy.dyn, X, t, (U, P))
+    soli = odeint(dy.dyn, Xi, t, (U, P))
+
+    dy.plot(t, sol, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+    dy.plot(t, soli, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+    plt.suptitle("Paramètres d'état en fonction du temps(secondes)- modèle non linéaire")
+    plt.savefig('seance3/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.show()
+    plt.close()
+
+    plt.axis([0, max(sol[:, 0]) / 1000. + 10., 10.980, 11.020])
+    plt.plot(sol[:, 0] / 1000., sol[:, 1] /1000.)
+    plt.xlabel("Distance parcourue y (kilomètres) durant {}s".format(tt))
+    plt.ylabel("Altitude h (kilomètres)")
+    plt.title("Trajectoire d'un " + P.name)
+    plt.text(1, 10, "mouvement est rectiligne uniforme")
+    plt.text(1, 9, "Point de trim : mac = {:.2f}, h = {:.0f}m, ms = {:.1f}".format(mac, h, P.ms))
+    plt.text(1, 8, "masse = {:.0f}kg".format(P.m))
+    plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.show()
+
+trajectoire(Xi,X,U,P)
 
