@@ -89,7 +89,7 @@ def portance():
 # en cas d’augmentation intempestive de l’incidence α ?
 
 
-def tangage():
+def Cm_of_alpha():
     a_deg = [-10, 20]
     a_rad = np.array(a_deg) * np.pi / 180.
     ms_list = [-0.1, 0., 0.2, 1]
@@ -114,11 +114,11 @@ def tangage():
     plt.axvline()
     plt.xlabel(r'Incidence $\alpha$')
     plt.ylabel('Coef. tangage Cm')
-    plt.savefig('sceance1/Cm_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('seance1/Cm_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
-# tangage()
+# Cm_of_alpha()
 
 
 # 3.2.4
