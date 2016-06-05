@@ -316,7 +316,6 @@ def etat_lin4(h_tuple, mac_tuple, km_tuple, ms_tuple):
 
 def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
     '''
-    calcule les repr d'état linéarisées A et B
     :param h_tuple: tuple contenant le altitudes
     :param mac_tuple:
     :param km_tuple:
