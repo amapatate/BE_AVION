@@ -336,10 +336,11 @@ def plot2(time, X, X2, U=None, figure=None, window_title="Trajectory"):
              ("$q$", "deg/s", ut.deg_of_rad(X2[:, s_q]), 2.)]
     for i, (title, ylab, data, min_yspan) in enumerate(plots):
         ax = plt.subplot(3, 2, i + 1)
-        plt.plot(time, data)
+        plt.plot(time, data,label="non lineaire")
         ut.decorate(ax, title=title, ylab=ylab, min_yspan=min_yspan)
     for i, (title, ylab, data, min_yspan) in enumerate(plots2):
         ax = plt.subplot(3, 2, i + 1)
-        plt.plot(time, data)
+        plt.plot(time, data, label="lineaire")
         ut.decorate(ax, title=title, ylab=ylab, min_yspan=min_yspan)
+    plt.legend(loc='best')
     return figure

@@ -445,7 +445,7 @@ def affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P):
 
 
 
-affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P)
+# affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P)
 
 
 # Pour la séance 3, le point de trim

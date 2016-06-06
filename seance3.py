@@ -108,8 +108,8 @@ def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
                     # et ajout dans le tuple etat
                     etat = (X, U) = dy.trim(P, dico)
                     etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
-                    A4 = np.copy(A[2:, 2:])
-                    B4 = np.copy(B[2:])
+                    A4 = A[2:, 2:].copy()
+                    B4 = B[2:].copy()
                     etat_lin4 = (A4, B4)
                     # calcul vp val propre
                     vp = np.linalg.eig(A4)
@@ -136,7 +136,9 @@ def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
 # On choisit le point de trim ci-dessous déjà utilisé lors de la séance 2
 tout = v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple)  # on récupere "tout"
 vp = tout[0]  # on choisit uniquement les val propres, pas les vecteurs
-pt_trim =  (11000.0, 0.8, 0.9, 1.0)
+
+# $$$ on fixe un pt de trim
+pt_trim =  (3000.0, 0.5, 0.9, 1.)
 vap1=vp[pt_trim] # on choisit les val propres d'un seul point de trim
 # print(type(vap1))
 vep = tout[1]  # on selectionne le dico des vecteurs propres
@@ -148,10 +150,11 @@ A4B4 = A4B4_dict[pt_trim]
 A4 = A4B4[0]
 B4 = A4B4[1]
 
-toto = tout[3]
-X,U = toto[pt_trim]
+XU_dico = tout[3]
+X,U = XU_dico[pt_trim]
 X = np.array(X)
 U=np.array(U)
+
 # print(type(U))
 
 #récup de A et B
@@ -176,12 +179,6 @@ def affiche_mat(M):
             f = "{:+.5f}  ".format(M[l])
             print(f)
 
-#
-
-# affiche_mat(B)
-# print(A)
-
-
 
 
 # Pour la séance 3, le point de trim
@@ -199,53 +196,79 @@ def affiche_mat(M):
 #calcul du nouveau vecteur d'état intial on a alpha
 #atan(wh/vae)
 dalpha =  math.atan(2./X[dy.s_va])
-Xi=np.copy(X)
+Xi=X.copy()
 Ui=np.copy(U)
 Xi[dy.s_a]+=dalpha
+
 
 print("*******************")
 
 #X est l'état d'equilibre
 dXi=np.zeros(6)
 dXi[dy.s_a]=dalpha
-def dyn_lin(dX,t,A):
-    dXdot=np.dot(A,dX)
+A = np.array(A)
+# def dyn_lin(dX,t):
+#
+#     dX = np.array(dX)
+#     dXdot=np.dot(A,dX)
+#     return dXdot
+
+Xe = X.copy()
+
+
+
+##########################################################################"
+# point de trim différend de celui utilisé pour obtenir la matrice A et B
+X,U = XU_dico[(11000.0, 0.8, 0.9, 1.0)]
+X = np.array(X)
+Xe=X.copy()
+
+###########################################################################
+
+def dyn_lin(X,t):
+    dXdot=np.dot(A,X)-np.dot(A,Xe)
     return dXdot
 
 
+def Xet(X,nb):
+    '''
+    produit
+    :param X:
+    :param nb:nb de ligne du tableau
+    :return:un array contitué de nb lignes du vecteur X
+    '''
+    col = len(X)
+    xet = np.zeros((nb,col))
+    for i in range(nb):
+        xet[i,:]= X
+    return xet
+
+
 def trajectoire(X, U, P):
-    tt=240 # 240s
-    t = np.linspace(0, tt, tt+1)
+    tt=240# 240s
+    nb_val=1000
+    t = np.linspace(0, tt, nb_val)
     sol = odeint(dy.dyn, X, t, (U, P))
-    # sol_lin = odeint(np.dot(A,dXi), dXi, t, (U, P))
-    sol_lin = odeint(dyn_lin, dXi, t,(A,))
-
-# construction d'un matrice constituée pour chaque des valeur de Xe=X
-
-
-    for i,t2 in enumerate(t):
-        sol_lin[i,:]+=X
-        print(sol_lin)
-
+    sol_lin = odeint(dyn_lin, X, t)
 
     dy.plot2(t, sol,sol_lin, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
     # dy.plot(t, soli, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
-    plt.suptitle("Paramètres d'état en fonction du temps(secondes)- modèle non linéaire")
-    # plt.savefig('seance3/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.suptitle("Paramètres d'état en fonction du temps(secondes)- trim = {}".format(pt_trim))
+    plt.savefig('seance3/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
     plt.close()
 
-    plt.axis([0, max(sol[:, 0]), 10800, 11200])
-    plt.plot(sol[:, 0], sol[:, 1])
-    plt.grid(True)
-    plt.xlabel("Distance parcourue y (kilomètres) durant {}s".format(tt))
-    plt.ylabel("Altitude h (kilomètres)")
-    plt.title("Trajectoire d'un " + P.name)
-    plt.text(1, 10, "mouvement est rectiligne uniforme")
-    plt.text(1, 9, "Point de trim : mac = {:.2f}, h = {:.0f}m, ms = {:.1f}".format(mac, h, P.ms))
-    plt.text(1, 8, "masse = {:.0f}kg".format(P.m))
-    # plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
-    plt.show()
+    # plt.axis([0, max(sol[:, 0]), 10800, 11200])
+    # plt.plot(sol[:, 0], sol[:, 1])
+    # plt.grid(True)
+    # plt.xlabel("Distance parcourue y (kilomètres) durant {}s".format(tt))
+    # plt.ylabel("Altitude h (kilomètres)")
+    # plt.title("Trajectoire d'un " + P.name)
+    # plt.text(1, 10, "mouvement est rectiligne uniforme")
+    # plt.text(1, 9, "Point de trim : mac = {:.2f}, h = {:.0f}m, ms = {:.1f}".format(mac, h, P.ms))
+    # plt.text(1, 8, "masse = {:.0f}kg".format(P.m))
+    # # plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    # plt.show()
 
 trajectoire(Xi,U,P)
 
@@ -258,8 +281,8 @@ M_1=np.linalg.inv(M)
 dXip = np.dot(M_1,dXi)
 
 #vap1 contient les 4 val propres
-toto=np.diag(vap1) #np.exp(vap1)
-# print(toto)
+diag4=np.diag(vap1) #np.exp(vap1)
+
 
 
 
