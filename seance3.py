@@ -149,7 +149,6 @@ A4B4_dict = tout[2]
 A4B4 = A4B4_dict[pt_trim]
 A4 = A4B4[0]
 B4 = A4B4[1]
-
 XU_dico = tout[3]
 X,U = XU_dico[pt_trim]
 X = np.array(X)
@@ -219,9 +218,11 @@ Xe = X.copy()
 
 ##########################################################################"
 # point de trim différend de celui utilisé pour obtenir la matrice A et B
-X,U = XU_dico[(11000.0, 0.8, 0.9, 1.0)]
-X = np.array(X)
-Xe=X.copy()
+# X,U = XU_dico[(11000.0, 0.8, 0.9, 1.0)]
+# X = np.array(X)
+# Xe=X.copy()
+
+# conclusion forte sensibilité aux conditions intiales
 
 ###########################################################################
 
@@ -270,7 +271,13 @@ def trajectoire(X, U, P):
     # # plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     # plt.show()
 
-trajectoire(Xi,U,P)
+# trajectoire(Xi,U,P)
+
+
+
+
+# séance 3 :
+# 5.2.4 - donner la repr modale
 
 # modèle linéaire 4 composantes
 dXi=np.zeros(4)
@@ -279,14 +286,29 @@ dXi[1]=dalpha
 #calcul de M-1 l'inverse de M
 M_1=np.linalg.inv(M)
 dXip = np.dot(M_1,dXi)
-
+print("*****************************************************************")
+print("La matrice de passage est M = ")
+print(affiche_mat(M))
+print("*****************************************************************")
 #vap1 contient les 4 val propres
 diag4=np.diag(vap1) #np.exp(vap1)
 
+print("Dans la base propre A est diagonale et vaut : ")
+print(affiche_mat(diag4))
+print()
+print("La matrice de passage inverse M_1 = ")
+print(affiche_mat(M_1) )
+print()
+B4p = np.dot(M_1,B4)
+print("La matrice B4p = M_1*B4 dans la base propre est :")
+print(affiche_mat(B4p))
+print()
+# on a A4 et B4 issus de la linéarisation autour de Xe
 
-
-
-
+print("A4 = ", A4)
+print()
+print("B4 = ", B4)
+# print("\n\n\n*****************************")
 
 ########################################################################
 # Pour chaque pas de temps contenu dans t, on calcule les dXp
@@ -322,19 +344,5 @@ diag4=np.diag(vap1) #np.exp(vap1)
 #     Xdot= X+
 
 
-
-
-#
-#
-# tt=240 # 240s
-# t = np.linspace(0, tt, tt+1)
-# sol_lin = odeint(dyn_lin, dXi, t,(A,))
-#
-# # construction d'un matrice constituée pour chaque des valeur de Xe=X
-#
-#
-# for i,t2 in enumerate(t):
-#    sol_lin[i,:]+=X
-# print(sol_lin)
 
 
