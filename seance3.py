@@ -122,7 +122,7 @@ def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
                     dico_vecteur_propre[pt_trim] = vp[1:][0] # car vp est un tuple ; indice 1 => array des vect propre indice 0 val propres
 
 
-    return dico_vp, dico_vecteur_propre,dico_etat_lin4, dico_etat
+    return dico_vp, dico_vecteur_propre,dico_etat_lin4, dico_etat, dico_etat_lin
 
 
 
@@ -154,8 +154,12 @@ X = np.array(X)
 U=np.array(U)
 # print(type(U))
 
+#récup de A et B
+AB_dict = tout[4]
+AB = AB_dict[pt_trim]
+A = AB[0]
+B = AB[1]
 
-# print(M)
 
 
 def affiche_mat(M):
@@ -174,8 +178,8 @@ def affiche_mat(M):
 
 #
 
-# affiche_mat(M)
-# print(A4)
+# affiche_mat(B)
+# print(A)
 
 
 
@@ -201,18 +205,33 @@ Xi[dy.s_a]+=dalpha
 
 print("*******************")
 
-
+#X est l'état d'equilibre
+dXi=np.zeros(6)
+dXi[dy.s_a]=dalpha
+def dyn_lin(dX,t,A):
+    dXdot=np.dot(A,dX)
+    return dXdot
 
 
 def trajectoire(X, U, P):
     tt=240 # 240s
     t = np.linspace(0, tt, tt+1)
     sol = odeint(dy.dyn, X, t, (U, P))
-    # print(type(sol))
-    dy.plot(t, sol, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+    # sol_lin = odeint(np.dot(A,dXi), dXi, t, (U, P))
+    sol_lin = odeint(dyn_lin, dXi, t,(A,))
+
+# construction d'un matrice constituée pour chaque des valeur de Xe=X
+
+
+    for i,t2 in enumerate(t):
+        sol_lin[i,:]+=X
+        print(sol_lin)
+
+
+    dy.plot2(t, sol,sol_lin, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
     # dy.plot(t, soli, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
     plt.suptitle("Paramètres d'état en fonction du temps(secondes)- modèle non linéaire")
-    plt.savefig('seance3/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    # plt.savefig('seance3/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
     plt.close()
 
@@ -225,12 +244,12 @@ def trajectoire(X, U, P):
     plt.text(1, 10, "mouvement est rectiligne uniforme")
     plt.text(1, 9, "Point de trim : mac = {:.2f}, h = {:.0f}m, ms = {:.1f}".format(mac, h, P.ms))
     plt.text(1, 8, "masse = {:.0f}kg".format(P.m))
-    plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    # plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
-# trajectoire(Xi,U,P)
+trajectoire(Xi,U,P)
 
-# modèle linéaire
+# modèle linéaire 4 composantes
 dXi=np.zeros(4)
 dXi[1]=dalpha
 
@@ -242,22 +261,57 @@ dXip = np.dot(M_1,dXi)
 toto=np.diag(vap1) #np.exp(vap1)
 # print(toto)
 
+
+
+
+
+########################################################################
 # Pour chaque pas de temps contenu dans t, on calcule les dXp
-tt=240
-t = np.linspace(0, tt, tt+1)
-ll=[]
-for time in t:
-    expDt = np.diag(np.exp(vap1*time))
-    dXp = np.dot(expDt,dXip)
-    dX=[0.,0.]
-    dX+=np.real(np.dot(M,dXp)).tolist()
-    Xt=X+np.array(dX)
-    # print(Xt)
-    ll.append(Xt)
-sol2=np.array(ll)
-# print(sol2)
-sol = odeint(dy.dyn, Xi, t, (U, P))
-dy.plot2(t, sol,sol2, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
-plt.show()
+# tt=240
+# t = np.linspace(0, tt, tt+1)
+# ll=[]
+# for time in t:
+#     expDt = np.diag(np.exp(vap1*time))
+#     dXp = np.dot(expDt,dXip)
+#     dX=[0.,0.]
+#     dX+=np.real(np.dot(M,dXp)).tolist()
+#     Xt=X+np.array(dX)
+#     # print(Xt)
+#     ll.append(Xt)
+# sol2=np.array(ll)
+# # print(sol2)
+# sol = odeint(dy.dyn, Xi, t, (U, P))
+# dy.plot2(t, sol,sol2, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+# plt.show()
 
 #dX = X(t)-Xe=X(t)-X => X(t) = X+dX
+
+############################################################################################################"
+# seconde méthode
+# on calcule
+
+# def dyn_lin(X, t, U, P):
+#     '''
+#     on implémente dXdot=AdX+BdU ; on a dU=0 Xdot=Xe + dXdot = Xdot + dXdot  X(t) = X+dX
+#     return : Xdot
+#     '''
+#     dXdot = np.dot(A,dX)
+#     Xdot= X+
+
+
+
+
+#
+#
+# tt=240 # 240s
+# t = np.linspace(0, tt, tt+1)
+# sol_lin = odeint(dyn_lin, dXi, t,(A,))
+#
+# # construction d'un matrice constituée pour chaque des valeur de Xe=X
+#
+#
+# for i,t2 in enumerate(t):
+#    sol_lin[i,:]+=X
+# print(sol_lin)
+
+
