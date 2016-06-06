@@ -208,8 +208,7 @@ def trajectoire(X, U, P):
     tt=240 # 240s
     t = np.linspace(0, tt, tt+1)
     sol = odeint(dy.dyn, X, t, (U, P))
-    # soli = odeint(dy.dyn, Xi, t, (U, P))
-
+    # print(type(sol))
     dy.plot(t, sol, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
     # dy.plot(t, soli, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
     plt.suptitle("Paramètres d'état en fonction du temps(secondes)- modèle non linéaire")
@@ -232,15 +231,33 @@ def trajectoire(X, U, P):
 # trajectoire(Xi,U,P)
 
 # modèle linéaire
-
-# dXi = Xi-X
-# print(dXi)
 dXi=np.zeros(4)
 dXi[1]=dalpha
-# print (dXi)
-#
+
 #calcul de M-1 l'inverse de M
 M_1=np.linalg.inv(M)
 dXip = np.dot(M_1,dXi)
-# print(dXip)
 
+#vap1 contient les 4 val propres
+toto=np.diag(vap1) #np.exp(vap1)
+# print(toto)
+
+# Pour chaque pas de temps contenu dans t, on calcule les dXp
+tt=240
+t = np.linspace(0, tt, tt+1)
+ll=[]
+for time in t:
+    expDt = np.diag(np.exp(vap1*time))
+    dXp = np.dot(expDt,dXip)
+    dX=[0.,0.]
+    dX+=np.real(np.dot(M,dXp)).tolist()
+    Xt=X+np.array(dX)
+    # print(Xt)
+    ll.append(Xt)
+sol2=np.array(ll)
+# print(sol2)
+sol = odeint(dy.dyn, Xi, t, (U, P))
+dy.plot2(t, sol,sol2, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+plt.show()
+
+#dX = X(t)-Xe=X(t)-X => X(t) = X+dX

@@ -319,3 +319,27 @@ def plot(time, X, U=None, figure=None, window_title="Trajectory"):
         plt.plot(time, data)
         ut.decorate(ax, title=title, ylab=ylab, min_yspan=min_yspan)
     return figure
+
+def plot2(time, X, X2, U=None, figure=None, window_title="Trajectory"):
+    figure = ut.prepare_fig(figure, window_title, (20.48, 10.24))
+    plots = [("$y$", "m", X[:, s_y], None),
+             ("$h$", "m", X[:, s_h], 2.),
+             ("$v_a$", "m/s", X[:, s_va], 1.),
+             ("$\\alpha$", "deg", ut.deg_of_rad(X[:, s_a]), 2.),
+             ("$\\theta$", "deg", ut.deg_of_rad(X[:, s_th]), 2.),
+             ("$q$", "deg/s", ut.deg_of_rad(X[:, s_q]), 2.)]
+    plots2 = [("$y$", "m", X2[:, s_y], None),
+             ("$h$", "m", X2[:, s_h], 2.),
+             ("$v_a$", "m/s", X2[:, s_va], 1.),
+             ("$\\alpha$", "deg", ut.deg_of_rad(X2[:, s_a]), 2.),
+             ("$\\theta$", "deg", ut.deg_of_rad(X2[:, s_th]), 2.),
+             ("$q$", "deg/s", ut.deg_of_rad(X2[:, s_q]), 2.)]
+    for i, (title, ylab, data, min_yspan) in enumerate(plots):
+        ax = plt.subplot(3, 2, i + 1)
+        plt.plot(time, data)
+        ut.decorate(ax, title=title, ylab=ylab, min_yspan=min_yspan)
+    for i, (title, ylab, data, min_yspan) in enumerate(plots2):
+        ax = plt.subplot(3, 2, i + 1)
+        plt.plot(time, data)
+        ut.decorate(ax, title=title, ylab=ylab, min_yspan=min_yspan)
+    return figure
