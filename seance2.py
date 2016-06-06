@@ -233,8 +233,9 @@ def trajectoire(X, U, P):
     plt.show()
     plt.close()
 
-    plt.axis([0, max(sol[:, 0]) / 1000. + 10., 0, 12])
+    plt.axis([0, max(sol[:, 0]) / 1000. + 10., 10.900, 11.100])
     plt.plot(sol[:, 0] / 1000., sol[:, 1] / 1000.)
+    plt.grid(True)
     plt.xlabel("Distance parcourue y (kilomètres) durant 100s")
     plt.ylabel("Altitude h (kilomètres)")
     plt.title("Trajectoire d'un " + P.name)
@@ -245,7 +246,7 @@ def trajectoire(X, U, P):
     plt.show()
 
 
-# trajectoire(X, U, P)
+trajectoire(X, U, P)
 
 
 # 4.2.4

@@ -137,8 +137,8 @@ def v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple):
 tout = v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple)  # on récupere "tout"
 vp = tout[0]  # on choisit uniquement les val propres, pas les vecteurs
 pt_trim =  (11000.0, 0.8, 0.9, 1.0)
-vap1=vp[pt_trim] # on choisit un seul point de trim
-
+vap1=vp[pt_trim] # on choisit les val propres d'un seul point de trim
+# print(type(vap1))
 vep = tout[1]  # on selectionne le dico des vecteurs propres
 M = vep[pt_trim]  # on selectionne la matrice de vect propre associés au trim choisi ; M matrice de passage tq X = MX'
 # X' vecteur d'état dans la base modale
@@ -152,7 +152,7 @@ toto = tout[3]
 X,U = toto[pt_trim]
 X = np.array(X)
 U=np.array(U)
-print(type(U))
+# print(type(U))
 
 
 # print(M)
@@ -192,36 +192,34 @@ def affiche_mat(M):
 #5.2.1 - évolution sur 240s suite à une rafale de vent verticale de wh = 2 m/s induisant un nouvelle angle alpha
 # initial à partir duquel on "lache" l'avion.
 
-#calcul du nouveau vecteur d'état intial on a alpha = theta (incidence = assiette)
+#calcul du nouveau vecteur d'état intial on a alpha
 #atan(wh/vae)
 dalpha =  math.atan(2./X[dy.s_va])
 Xi=np.copy(X)
 Ui=np.copy(U)
-# Ui[dy.i_wz]+=2
 Xi[dy.s_a]+=dalpha
-Xi[dy.s_th]+=dalpha
+
 print("*******************")
-# affiche_mat(Xi)
-# affiche_mat(X)
-# print(dalpha)
 
 
 
-def trajectoire(Xi,X, U, P):
+
+def trajectoire(X, U, P):
     tt=240 # 240s
     t = np.linspace(0, tt, tt+1)
     sol = odeint(dy.dyn, X, t, (U, P))
-    soli = odeint(dy.dyn, Xi, t, (U, P))
+    # soli = odeint(dy.dyn, Xi, t, (U, P))
 
     dy.plot(t, sol, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
-    dy.plot(t, soli, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+    # dy.plot(t, soli, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
     plt.suptitle("Paramètres d'état en fonction du temps(secondes)- modèle non linéaire")
     plt.savefig('seance3/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
     plt.close()
 
-    plt.axis([0, max(sol[:, 0]) / 1000. + 10., 10.980, 11.020])
-    plt.plot(sol[:, 0] / 1000., sol[:, 1] /1000.)
+    plt.axis([0, max(sol[:, 0]), 10800, 11200])
+    plt.plot(sol[:, 0], sol[:, 1])
+    plt.grid(True)
     plt.xlabel("Distance parcourue y (kilomètres) durant {}s".format(tt))
     plt.ylabel("Altitude h (kilomètres)")
     plt.title("Trajectoire d'un " + P.name)
@@ -231,5 +229,18 @@ def trajectoire(Xi,X, U, P):
     plt.savefig('seance3/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
-trajectoire(Xi,X,U,P)
+# trajectoire(Xi,U,P)
+
+# modèle linéaire
+
+# dXi = Xi-X
+# print(dXi)
+dXi=np.zeros(4)
+dXi[1]=dalpha
+# print (dXi)
+#
+#calcul de M-1 l'inverse de M
+M_1=np.linalg.inv(M)
+dXip = np.dot(M_1,dXi)
+# print(dXip)
 
