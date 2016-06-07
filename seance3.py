@@ -25,49 +25,11 @@ abs_min = 3
 abs_max = 11
 nb_ligne = len(km_tuple) * len(ms_tuple)
 
-# on choisit le point de trim numéro 16 pour lequel on a :
-h = 11000.
-mac = 0.8
+# on choisit le point de trim pour lequel on a :
+h = 3000.
+mac = 0.5
 km = 0.9
 ms = 1.
-
-
-# def etat_lin4(h_tuple, mac_tuple, km_tuple, ms_tuple):
-#     '''
-#     calcule les repr d'état linéarisées A et B
-#     :param h_tuple: tuple contenant le altitudes
-#     :param mac_tuple:
-#     :param km_tuple:
-#     :param ms_tuple:
-#     :return:
-#     '''
-#     dico_etat = {}  # dico pour stocker les 16 états associés au 16 pts de trim
-#     dico_etat_lin = {}
-#     dico_etat_lin4 = {}
-#
-#     for i, km in enumerate(km_tuple):
-#         for j, ms in enumerate(ms_tuple):
-#             P.set_mass_and_static_margin(km, ms)
-#             for idx, mac in enumerate(mac_tuple):
-#                 dico = {}  # dico = args dans la fonction trim
-#                 for h in h_tuple:
-#                     dico['h'] = h
-#                     dico['va'] = dy.va_of_mach(mac, h)  # conv mach en m/s
-#                     # calcul des points de trim associés aux 4 valeurs h, mac, km et ms
-#                     # et ajout dans le tuple etat
-#                     etat = (X, U) = dy.trim(P, dico)
-#                     etat_lin = (A, B) = ut.num_jacobian(X, U, P, dy.dyn)
-#                     A4 = np.copy(A[2:, 2:])
-#                     B4 = np.copy(B[2:])
-#                     etat_lin4 = (A4, B4)
-#                     # construction du tuple (h,mac,km,ms) qui jouera le role de clé du dico states
-#                     pt_trim = (h, mac, km, ms)
-#                     dico_etat[pt_trim] = etat
-#                     dico_etat_lin[pt_trim] = etat_lin
-#                     dico_etat_lin4[pt_trim] = etat_lin4
-#     return dico_etat_lin4
-
-
 
 # valeurs propres
 
@@ -127,7 +89,7 @@ tout = v_propre(h_tuple, mac_tuple, km_tuple, ms_tuple)  # on récupere "tout"
 vp = tout[0]  # on choisit uniquement les val propres, pas les vecteurs
 
 # $$$ on fixe un pt de trim
-pt_trim = (11000.0, 0.5, 0.9, 1.)
+pt_trim = (3000.0, 0.5, 0.9, 1.)
 vap1 = vp[pt_trim]  # on choisit les val propres d'un seul point de trim
 # print(type(vap1))
 vep = tout[1]  # on selectionne le dico des vecteurs propres
@@ -143,7 +105,6 @@ X, U = XU_dico[pt_trim]
 X = np.array(X)
 U = np.array(U)
 
-# print(type(U))
 
 # récup de A et B
 AB_dict = tout[4]
@@ -167,14 +128,7 @@ def affiche_mat(M):
             print(f)
 
 
-# Pour la séance 3, le point de trim
-# pt_trim =  (11000.0, 0.8, 0.9, 1.0)  a toutes ses vp à partie réelle <0
-# valeurs propres  [
-# -0.64246345 + 2.71414129j \
-# -0.64246345 - 2.71414129j \
-# -0.00269042 + 0.05730786j
-# -0.00269042 - 0.05730786j
-# ]
+
 
 # 5.2.1 - évolution sur 240s suite à une rafale de vent verticale de wh = 2 m/s induisant un nouvelle angle alpha
 # initial à partir duquel on "lache" l'avion.
@@ -291,7 +245,7 @@ print(affiche_mat(B4p))
 print()
 # on a A4 et B4 issus de la linéarisation autour de Xe
 
-print("A4 = ", A4)
+print("A4 = ", affiche_mat(A4))
 print()
 print("B4 = ", B4)
 
@@ -303,22 +257,19 @@ print()
 
 print("valeurs propres ", vap1)
 
-print("CONCLUSION : LE MODELE LINEAIRE A 4 COMPOSANTE EST INSTABLE POUR LE PT_TRIM ", pt_trim)
+print("CONCLUSION : LE MODELE LINEAIRE A 4 COMPOSANTE EST STABLE POUR LE PT_TRIM ", pt_trim)
 print("les modes")
 
+print()
+print()
+print("COMMANDABILITE : SYSTME LTI")
 
+print("La matrice B4p = M_1*B4 dans la base propre est :")
+print(affiche_mat(B4p))
 
+print("conclusion : les vp sont distinctes et la mat de commande modale B4p ne présente pas de lignes nulles =>")
+print("le système est entirement commandable")
 
-# print("On calcule les modules des valeurs propres ; si tous les modules sont < 1, le système est stable.")
-# print("Les vp de A à 4 composantes sont : ")
-# print()
-# print(vap1)
-#
-# print("valeurs propres ", vap1)
-#
-# mod_car = np.power(np.real(vap1), 2)+ np.power(np.imag(vap1), 2)
-# print("modules des valeurs propres :  ")
-# print(np.power(mod_car,0.5))
 
 
 
