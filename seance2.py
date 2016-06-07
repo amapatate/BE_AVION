@@ -87,6 +87,7 @@ def trace_all(km_tuple, ms_tuple):
     for i, km in enumerate(km_tuple):
         for j, ms in enumerate(ms_tuple):
             trace(km, ms)
+            plt.savefig("seance2/trim_vol_palier{}{}.png".format(i,j), dpi=120)
             plt.show()
             plt.close()
 
@@ -229,6 +230,7 @@ def trajectoire(X, U, P):
     plt.close()
 
     dy.plot(t, sol, U=None, figure=None, window_title="Paramètres d'état en fonction du temps(secondes)")
+    plt.suptitle("Paramètres d'état en fonction du temps(secondes)")
     plt.savefig('seance2/param_of_time.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
     plt.close()
@@ -242,11 +244,11 @@ def trajectoire(X, U, P):
     plt.text(1, 10, "Comme attendu le mouvenement est rectiligne uniforme")
     plt.text(1, 9, "Point de trim : mac = {:.2f}, h = {:.0f}m, ms = {:.1f}".format(mac, h, P.ms))
     plt.text(1, 8, "masse = {:.0f}kg".format(P.m))
-    plt.savefig('seance2/trajectoire.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('seance2/trajectoire2.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 
-trajectoire(X, U, P)
+# trajectoire(X, U, P)
 
 
 # 4.2.4
@@ -379,20 +381,20 @@ def affiche_vp(h_tuple, mac_tuple, km_tuple, ms_tuple,P):
                         #         plt.annotate("toto",xy=(xx, y[i]), xytext=(xx-0.2, y[i]-0.2),
                         #                  arrowprops={'facecolor': 'red', 'shrink': 0.05})
                         plt.subplot(4, 2, num_plot)
-                        plt.scatter(x, y, color='red',s=4)
+                        plt.scatter(x, y, color='red',s=8)
                         # plt.xscale('symlog')
                         # plt.yscale('symlog')
                         plt.grid(True)
                         plt.axis([-3,0.1,-6.3,6.3])
                         plt.text(-2.5,4,"Ma={:.1f}, km = {:.1f} , ms = {:.1f}".format(pt_trim[1],pt_trim[2],pt_trim[3]), fontsize=8)
                         fig.subplots_adjust(hspace=0.3)
-                        plt.suptitle("Valeurs propres pour h = {:.0f} km pour le {}".format(h_tuple[idx]/1000,P.name))
+                        plt.suptitle("Valeurs propres phogoîde et oscillation d'incidence pour h = {:.0f} km pour le {}".format(h_tuple[idx]/1000,P.name))
                         print("pt_trim = ", pt_trim, " \n valeurs propres ", vpp, "\n")
                         plt.xticks(fontsize=7)
                         plt.yticks(fontsize=7)
                         plt.axhline()
                         plt.axvline()
-                        # plt.savefig('seance2/vp{:.0f}.png'.format(h_tuple[idx]/1000),dpi=120)
+                        plt.savefig('seance2/vp{:.0f}.png'.format(h_tuple[idx]/1000),dpi=120)
                         num_plot+=1
 
     plt.show()
@@ -401,7 +403,7 @@ def affiche_vp(h_tuple, mac_tuple, km_tuple, ms_tuple,P):
 
 
 
-# affiche_vp(h_tuple, mac_tuple, km_tuple, ms_tuple,P)
+affiche_vp(h_tuple, mac_tuple, km_tuple, ms_tuple,P)
 
 
 
@@ -425,18 +427,18 @@ def affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P):
                         #         plt.annotate("toto",xy=(xx, y[i]), xytext=(xx-0.2, y[i]-0.2),
                         #                  arrowprops={'facecolor': 'red', 'shrink': 0.05})
                         plt.subplot(4, 2, num_plot)
-                        plt.scatter(x, y, color='red',s=4)
+                        plt.scatter(x, y, color='red',s=8)
                         plt.grid(True)
                         plt.axis([-0.009,0.0,-0.1,0.1])
                         plt.text(-0.008,0.07,"Ma={:.1f}, km = {:.1f} , ms = {:.1f}".format(pt_trim[1],pt_trim[2],pt_trim[3]), fontsize=8)
                         fig.subplots_adjust(hspace=0.3)
-                        plt.suptitle("Valeurs propres pour h = {:.0f} km pour le {}".format(h_tuple[idx]/1000,P.name))
+                        plt.suptitle("Valeurs propres phugoîde pour h = {:.0f} km pour le {}".format(h_tuple[idx]/1000,P.name))
                         print("pt_trim = ", pt_trim, " \n valeurs propres ", vpp, "\n")
                         plt.xticks(fontsize=7)
                         plt.yticks(fontsize=7)
                         plt.axhline()
                         plt.axvline()
-                        # plt.savefig('seance2/vp{:.0f}_faible.png'.format(h_tuple[idx]/1000),dpi=120)
+                        plt.savefig('seance2/vp{:.0f}_faible.png'.format(h_tuple[idx]/1000),dpi=120)
                         num_plot+=1
 
     plt.show()
@@ -445,7 +447,7 @@ def affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P):
 
 
 
-# affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P)
+affiche_vp_faible(h_tuple, mac_tuple, km_tuple, ms_tuple,P)
 
 
 # Pour la séance 3, le point de trim

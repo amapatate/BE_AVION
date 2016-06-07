@@ -275,6 +275,7 @@ print("le système est entirement commandable")
 
 
 
+# 5.2.5 - fonction de transfert
 
 
 
