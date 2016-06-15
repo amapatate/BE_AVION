@@ -8,6 +8,11 @@ import dynamic as dy
 from scipy.integrate import odeint
 from pylab import *
 
+from sympy import *
+
+
+
+
 markeur = ('o', 'v', '^', '<', '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd', ' ')
 plt.grid(True)
 plt.axhline()
@@ -252,7 +257,7 @@ print("B4 = ", B4)
 ###########################################################################################
 print()
 print("STABILITE DU SYSTEME LINEAIRE A4 B4 ? CAS LTI CNS DE STABILITE asymptotique AST RE(VP)<0");
-print("si otutes les vp à partie réelles nulles sont non dégénérées le sys est NAST stable NON asymptotiquement")
+print("si toutes les vp à partie réelles nulles sont non dégénérées le sys est NAST stable NON asymptotiquement")
 print()
 
 print("valeurs propres ", vap1)
@@ -268,7 +273,7 @@ print("La matrice B4p = M_1*B4 dans la base propre est :")
 print(affiche_mat(B4p))
 
 print("conclusion : les vp sont distinctes et la mat de commande modale B4p ne présente pas de lignes nulles =>")
-print("le système est entirement commandable")
+print("le système est entièrement commandable")
 
 
 
@@ -277,10 +282,42 @@ print("le système est entirement commandable")
 
 # 5.2.5 - fonction de transfert
 
+x, y, z, p = symbols('x y z p')
+
+# Y = CM*X' avec C = [0 0 1 0] qui sélectionne la ligne 3 associée à theta
+# on note c la matrice ligne correspondante
+c = M[2,:]  # selection de la 3eme ligne
+# print("****9999   ", c)
+#
+# print(())
+# print(M)
+
+
+# on a C(pI-A)_1 M_1*B4 * vect colonne [1 0 0 0]T qui selectionne la 1ere colonne
+# de M_1*B4 = B4p ( p pour base propre) notée b
+
+b = B4p[:,0]  # selection de la 3eme ligne
+
+# on aura besoin du produit terme à terme de c par b qui donnera les numérateurs de la focntion de transfert
+n =c*b
 
 
 
+# les valeures propres de A sont contenues dans le vecteur vap1
+# on note v le vecteur pour avoir une notation plus compact
 
+v = vap1.copy()  # copie par valeur et non par référence ce qui modifierait vap1 si v est modifié
+
+
+# la fonction de transfert F(p) est la somme pour i de 0 à 3 des éléments simples ni/(p - v)
+
+ft = p
+for i in range(4):
+    ft = ft + n[i] / (p - v[i])
+print("vap1  :" , vap1)
+print("v  :" , v)
+ft=ft-p
+print(ft)
 ########################################################################
 # Pour chaque pas de temps contenu dans t, on calcule les dXp
 # tt=240
