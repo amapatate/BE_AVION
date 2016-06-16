@@ -282,7 +282,8 @@ print("le système est entièrement commandable")
 
 # 5.2.5 - fonction de transfert
 
-x, y, z, p = symbols('x y z p')
+t, p = symbols('t p')
+
 
 # Y = CM*X' avec C = [0 0 1 0] qui sélectionne la ligne 3 associée à theta
 # on note c la matrice ligne correspondante
@@ -301,7 +302,7 @@ b = B4p[:,0]  # selection de la 3eme ligne
 # on aura besoin du produit terme à terme de c par b qui donnera les numérateurs de la focntion de transfert
 n =c*b
 
-
+print("nnnnnnnnnnn : ",n)
 
 # les valeures propres de A sont contenues dans le vecteur vap1
 # on note v le vecteur pour avoir une notation plus compact
@@ -310,14 +311,82 @@ v = vap1.copy()  # copie par valeur et non par référence ce qui modifierait va
 
 
 # la fonction de transfert F(p) est la somme pour i de 0 à 3 des éléments simples ni/(p - v)
+# v contient 2 paires de val propres complexes conjuguée de partie réelle <0 donc la reduc du modèle selon padé est possible
+# G = p
+# for i in range(4):
+#     G = G + n[i] / (p - v[i])
+# print("vap1  :" , vap1)
+# print("v  :" , v)
+# G=G-p
+# print(G)
 
-ft = p
-for i in range(4):
-    ft = ft + n[i] / (p - v[i])
-print("vap1  :" , vap1)
-print("v  :" , v)
-ft=ft-p
-print(ft)
+# la réponse indicielle est Y = G/p
+# Y = G/p; print('Y :', Y)
+# G= n[0]/(p-v[0])
+# print("zzzz",inverse_laplace_transform(n[0]/(p*(p-v[0])), p, t))
+# print("zzzz",inverse_laplace_transform(Y, p, t))
+
+y = Function('y')(t)
+yp = Function('yp')(t)
+F = Function('F')(p)
+Y = Function('Y')(p)
+
+incid = simplify(n[0]/(p-v[0]) + n[1]/(p-v[1]))
+phugo=simplify(n[2]/(p-v[2]) + n[3]/(p-v[3]))
+F=incid+phugo
+
+y=inverse_laplace_transform(incid/p, p, t)+inverse_laplace_transform(phugo/p, p, t)
+  # +inverse_laplace_transform(phugo, p, t)
+# print("expr ", expr)
+# print("zzzz",inverse_laplace_transform(expr2/p, p, t))
+
+# yp = inverse_laplace_transform(phugo/p, p, t)
+
+plot(y(t),xlim=(0,240))
+# calcul de la tansformée de laplace inverse de Y=G/p pour récupérer la réponse indicielle
+# y=0
+# for i in range(4):
+#     y += inverse_laplace_transform(n[i]/(p*(p-v[i])), p, t)
+# expr = 0
+# for i in range(4):
+#     expr += n[i]/(p*(p-v[i]))
+#
+# print("expr : ", expr);exit()
+# y = inverse_laplace_transform(expr, p, t)
+
+# yy=simplify(y)
+
+
+# p_I = eye(4) * p
+# p_I_a4=p_I - Matrix(A4)
+# E= p_I_a4.inv()
+# print(E)
+# CC=Matrix(1,4,[0,0,1,0])
+# BB=Matrix(B4[:,0]);print("bbbb ",CC)
+#
+# G= CC*E*BB;print("GG ", G)
+# Y=G/p
+# # y = inverse_laplace_transform(Y, p, t)
+
+
+# E = p*eye(4)-Matrix(np.diag(vap1))
+# print("EEEE ",E)
+#
+# cc=Matrix(1,4,c)
+# bb=Matrix(4,1,b)
+#
+# G = cc*E*bb
+# Y=G/p
+# y = inverse_laplace_transform(Y, p, t)
+#
+# print("yyyy ", y)
+
+# print("y : " ,y)
+# print("imag :", real(1+22*I))
+# tt=240
+# t = np.linspace(0, tt, tt+1)
+
+
 ########################################################################
 # Pour chaque pas de temps contenu dans t, on calcule les dXp
 # tt=240
