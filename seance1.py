@@ -160,7 +160,7 @@ def dphre_of_alpha():
     plt.axvline()
     plt.xlabel(r'Incidence $\alpha$(°)')
     plt.ylabel('$\delta$ PHRe (rad) ')
-    plt.savefig('seance1/dphre_of_alpha.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
+    plt.savefig('seance1/dphre_of_alpha2222.png', dpi=120)  # sauvegarde du graphe au format png dans le dossier images
     plt.show()
 
 

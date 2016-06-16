@@ -10,9 +10,6 @@ from pylab import *
 
 from sympy import *
 
-
-
-
 markeur = ('o', 'v', '^', '<', '>', '1', '2', '3', '4', '8', 's', 'p', '*', 'h', 'H', '+', 'x', 'D', 'd', ' ')
 plt.grid(True)
 plt.axhline()
@@ -35,6 +32,7 @@ h = 3000.
 mac = 0.5
 km = 0.9
 ms = 1.
+
 
 # valeurs propres
 
@@ -110,7 +108,6 @@ X, U = XU_dico[pt_trim]
 X = np.array(X)
 U = np.array(U)
 
-
 # récup de A et B
 AB_dict = tout[4]
 AB = AB_dict[pt_trim]
@@ -131,8 +128,6 @@ def affiche_mat(M):
         for l in range(0, len(M)):
             f = "{:+.5f}  ".format(M[l])
             print(f)
-
-
 
 
 # 5.2.1 - évolution sur 240s suite à une rafale de vent verticale de wh = 2 m/s induisant un nouvelle angle alpha
@@ -162,7 +157,7 @@ Xe = X.copy()
 
 ##########################################################################"
 # point de trim différend de celui utilisé pour obtenir la matrice A et B
-# X,U = XU_dico[(11000.0, 0.8, 0.9, 1.0)]
+# X,U = XU_dico[(3000.0, 0.8, 0.9, 1.)]     #pt_trim = (3000.0, 0.5, 0.9, 1.)
 # X = np.array(X)
 # Xe=X.copy()
 
@@ -233,20 +228,20 @@ M_1 = np.linalg.inv(M)
 dXip = np.dot(M_1, dXi)
 print("*****************************************************************")
 print("La matrice de passage est M = ")
-print(affiche_mat(M))
+print(M)
 print("*****************************************************************")
 # vap1 contient les 4 val propres
 diag4 = np.diag(vap1)  # np.exp(vap1)
 
 print("Dans la base propre A est diagonale et vaut : ")
-print(affiche_mat(diag4))
+print(diag4)
 print()
 print("La matrice de passage inverse M_1 = ")
-print(affiche_mat(M_1))
+print(M_1)
 print()
 B4p = np.dot(M_1, B4)
 print("La matrice B4p = M_1*B4 dans la base propre est :")
-print(affiche_mat(B4p))
+print(B4p)
 print()
 # on a A4 et B4 issus de la linéarisation autour de Xe
 
@@ -275,19 +270,13 @@ print(affiche_mat(B4p))
 print("conclusion : les vp sont distinctes et la mat de commande modale B4p ne présente pas de lignes nulles =>")
 print("le système est entièrement commandable")
 
-
-
-
-
-
 # 5.2.5 - fonction de transfert
 
 t, p = symbols('t p')
 
-
 # Y = CM*X' avec C = [0 0 1 0] qui sélectionne la ligne 3 associée à theta
 # on note c la matrice ligne correspondante
-c = M[2,:]  # selection de la 3eme ligne
+c = M[2, :]  # selection de la 3eme ligne
 # print("****9999   ", c)
 #
 # print(())
@@ -297,52 +286,77 @@ c = M[2,:]  # selection de la 3eme ligne
 # on a C(pI-A)_1 M_1*B4 * vect colonne [1 0 0 0]T qui selectionne la 1ere colonne
 # de M_1*B4 = B4p ( p pour base propre) notée b
 
-b = B4p[:,0]  # selection de la 3eme ligne
+b = B4p[:, 0]  # selection de la 3eme ligne
 
 # on aura besoin du produit terme à terme de c par b qui donnera les numérateurs de la focntion de transfert
-n =c*b
-
-print("nnnnnnnnnnn : ",n)
+nn = c * b
+n=Matrix(nn)
+print("nnnnnnnnnnn : ", n[0],"  ****  ", n[1])
 
 # les valeures propres de A sont contenues dans le vecteur vap1
 # on note v le vecteur pour avoir une notation plus compact
 
-v = vap1.copy()  # copie par valeur et non par référence ce qui modifierait vap1 si v est modifié
+ll = vap1.copy()  # copie par valeur et non par référence ce qui modifierait vap1 si v est modifié
+l=Matrix(ll) # conversion en matrice sympy
 
 
-# la fonction de transfert F(p) est la somme pour i de 0 à 3 des éléments simples ni/(p - v)
-# v contient 2 paires de val propres complexes conjuguée de partie réelle <0 donc la reduc du modèle selon padé est possible
-# G = p
+
+
+
+
+#**********************************
+# calcul réponse indicielle
+# F=0
 # for i in range(4):
-#     G = G + n[i] / (p - v[i])
-# print("vap1  :" , vap1)
-# print("v  :" , v)
-# G=G-p
-# print(G)
+#     F += n[i] / (p - l[i])  # n pour numérateur, l comme lambda la val propre
+# G=apart(F/p);print("ggggggggggg ", inverse_laplace_transform(G,p,t))
 
-# la réponse indicielle est Y = G/p
-# Y = G/p; print('Y :', Y)
-# G= n[0]/(p-v[0])
-# print("zzzz",inverse_laplace_transform(n[0]/(p*(p-v[0])), p, t))
-# print("zzzz",inverse_laplace_transform(Y, p, t))
 
+
+################################################################################
+F = Function('F')(p)
 y = Function('y')(t)
 yp = Function('yp')(t)
-F = Function('F')(p)
-Y = Function('Y')(p)
 
-incid = simplify(n[0]/(p-v[0]) + n[1]/(p-v[1]))
-phugo=simplify(n[2]/(p-v[2]) + n[3]/(p-v[3]))
-F=incid+phugo
 
-y=inverse_laplace_transform(incid/p, p, t)+inverse_laplace_transform(phugo/p, p, t)
-  # +inverse_laplace_transform(phugo, p, t)
-# print("expr ", expr)
-# print("zzzz",inverse_laplace_transform(expr2/p, p, t))
+# incid = Function('incid')(p)
+# phugo = Function('phugo')(p)
+# inv_phugo = Function('inv_phugo')(t)
+# inv_incid = Function('inv_incid')(t)
 
-# yp = inverse_laplace_transform(phugo/p, p, t)
+# incid = simplify(n[0]/(p-l[0]) + n[1]/(p-l[1]))
+# phugo=simplify(n[2]/(p-l[2]) + n[3]/(p-l[3]))
+# F=incid+phugo
+#
+# print("lim ", limit(F, p, 0))
+# #
+#
+# inv_phugo = inverse_laplace_transform(phugo, p, t)
+# inv_incid = inverse_laplace_transform(incid, p, t)
+# y= inv_phugo + inv_incid
+#
+# print(y)
+# yp=inv_phugo
+#
+#
+# # plot(abs(y),xlim=(0,240))
+# plot(y,yp)
 
-plot(y(t),xlim=(0,240))
+F = n[0]/(p-l[0])
+Y = F/p
+print("YYYYYYYY",apart(Y))
+
+
+y= 0
+for i in range(4):
+    y += (n[i]/l[i])*(exp(l[i]*t)-1)*Heaviside(t)
+# plot(abs(y))
+print()
+
+###########################################################################
+
+
+
 # calcul de la tansformée de laplace inverse de Y=G/p pour récupérer la réponse indicielle
 # y=0
 # for i in range(4):
@@ -353,7 +367,7 @@ plot(y(t),xlim=(0,240))
 #
 # print("expr : ", expr);exit()
 # y = inverse_laplace_transform(expr, p, t)
-
+#
 # yy=simplify(y)
 
 
@@ -385,6 +399,32 @@ plot(y(t),xlim=(0,240))
 # print("imag :", real(1+22*I))
 # tt=240
 # t = np.linspace(0, tt, tt+1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ########################################################################
