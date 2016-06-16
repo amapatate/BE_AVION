@@ -350,7 +350,12 @@ print("YYYYYYYY",apart(Y))
 y= 0
 for i in range(4):
     y += (n[i]/l[i])*(exp(l[i]*t)-1)*Heaviside(t)
-# plot(abs(y))
+
+yp= 0
+for i in range(2,4):
+    yp += (n[i]/l[i])*(exp(l[i]*t)-1)*Heaviside(t)
+
+plot(y,yp)
 print()
 
 ###########################################################################
